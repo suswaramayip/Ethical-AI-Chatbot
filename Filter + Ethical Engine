@@ -1,0 +1,47 @@
+app/api/chat/route.js
+export async function POST(req) {
+  const { message } = await req.json();
+
+  const text = message.toLowerCase();
+
+  // FILTER LAYER
+  const bannedWords = [
+    "rape",
+    "porn",
+    "nude",
+    "sex",
+    "kill",
+    "abuse",
+    "harass"
+  ];
+
+  const unsafe = bannedWords.some(word =>
+    text.includes(word)
+  );
+
+  // ETHICAL ENGINE
+  let harmScore = 0;
+
+  if (unsafe) harmScore += 7;
+
+  if (text.includes("women") && text.includes("hate"))
+    harmScore += 5;
+
+  if (text.includes("child"))
+    harmScore += 10;
+
+  let reply;
+
+  if (harmScore >= 8) {
+    reply =
+      "⚠️ Warning: Harmful or exploitative language detected. Please communicate respectfully.";
+  } else if (harmScore >= 4) {
+    reply =
+      "Let's keep conversations respectful and safe for everyone.";
+  } else {
+    reply =
+      "Hello! I'm here to help while ensuring respectful conversation.";
+  }
+
+  return Response.json({ reply });
+}
